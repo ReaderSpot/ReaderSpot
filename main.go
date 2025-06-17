@@ -5,11 +5,15 @@ import (
 	"autonomo_dos/db"
 	"autonomo_dos/middlewares"
 	"autonomo_dos/models"
+	"time"
+
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
 	db, err := db.ConectarDB()
 	if err != nil {
 		panic(err)
@@ -18,14 +22,60 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	gin := gin.Default()
-	gin.POST("/registro", controllers.RegistrarUsuario)
-	gin.POST("/login", controllers.LoginUsuario)
-	autenticar := gin.Group("/auth")
+	router := gin.Default()
+	/*	|------------------------------|
+		|Crea la configuracion del CORS|
+		|------------------------------|
+	*/
+	router.Use(cors.New(cors.Config{
+		//direccion de solicitudes permitidas
+		AllowOrigins: []string{"http://readerspot.xyz"},
+		/*	____________________________________
+			|Metodos permitidos a la direccion |
+			|__________________________________|
+		*/
+		AllowMethods: []string{"PUT", "PATCH", "GET", "POST"},
+		/*	____________________________________
+			|Permite Headers personalizados	   |
+			|__________________________________|
+		*/
+		AllowHeaders: []string{"Origin"},
+		/*	_____________________________________________________
+			|Permite exponer directamente los Headers al usuario |
+			|____________________________________________________|
+		*/
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		/*	______________________________________
+			|Cache de cada solicitud echa a la API|
+			|_____________________________________|
+		*/
+		MaxAge: 6 * time.Hour,
+	}))
+
+	/*
+		-------------------
+		endpoint de prueba
+		-------------------
+	*/
+
+	router.POST("/registro", controllers.RegistrarUsuario)
+	router.POST("/login", controllers.LoginUsuario)
+	autenticar := router.Group("/auth")
+	/*
+		-----------------------------------------
+		Middleware para verificar si esta logueado
+		-----------------------------------------
+	*/
 	autenticar.Use(middlewares.LoginMiddleware())
+	router.GET("/test", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"mensaje": "GOOD",
+		})
+	})
 	autenticar.GET("/libros", controllers.BuscarLibroJWT)
 	autenticar.POST("/libros", controllers.CrearLibroJWT)
-	gin.Run()
+	router.Run(":8080")
 }
 
 /*
