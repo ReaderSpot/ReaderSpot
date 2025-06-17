@@ -3,10 +3,10 @@ package main
 import (
 	"autonomo_dos/controllers"
 	"autonomo_dos/db"
+	"autonomo_dos/middlewares"
 	"autonomo_dos/models"
-	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -14,16 +14,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(models.Libro{})
+	err = db.AutoMigrate(models.Libro{}, models.Categoria{}, models.Usuario{})
 	if err != nil {
 		panic(err)
 	}
-	router := mux.NewRouter()
-	router.HandleFunc("/libro/{id}", controllers.Enrutamiento).Methods("PUT")
-	router.HandleFunc("/libro", controllers.Enrutamiento).Methods("DELETE")
-	router.HandleFunc("/libro", controllers.Enrutamiento).Methods("GET")
-	router.HandleFunc("/libro", controllers.CrearLibro).Methods("POST")
-	http.ListenAndServe(":5000", router)
+	gin := gin.Default()
+	gin.POST("/registro", controllers.RegistrarUsuario)
+	gin.POST("/login", controllers.LoginUsuario)
+	autenticar := gin.Group("/auth")
+	autenticar.Use(middlewares.LoginMiddleware())
+	autenticar.GET("/libros", controllers.BuscarLibroJWT)
+	autenticar.POST("/libros", controllers.CrearLibroJWT)
+	gin.Run()
 }
 
 /*
