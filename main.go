@@ -58,23 +58,23 @@ func main() {
 		endpoint de prueba
 		-------------------
 	*/
-
-	router.POST("/registro", controllers.RegistrarUsuario)
-	router.POST("/login", controllers.LoginUsuario)
-	autenticar := router.Group("/auth")
+	authenticator := router.Group("/auth")
+	authenticator.POST("/registro", controllers.RegistrarUsuario)
+	authenticator.POST("/login", controllers.LoginUsuario)
+	validate := router.Group("/valid")
 	/*
 		-----------------------------------------
 		Middleware para verificar si esta logueado
 		-----------------------------------------
 	*/
-	autenticar.Use(middlewares.LoginMiddleware())
+	validate.Use(middlewares.LoginMiddleware())
 	router.GET("/test", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"mensaje": "GOOD",
 		})
 	})
-	autenticar.GET("/libros", controllers.BuscarLibroJWT)
-	autenticar.POST("/libros", controllers.CrearLibroJWT)
+	validate.GET("/libros", controllers.BuscarLibroJWT)
+	validate.POST("/libros", controllers.CrearLibroJWT)
 	router.Run(":8080")
 }
 
