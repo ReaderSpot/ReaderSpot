@@ -3,7 +3,6 @@ package middlewares
 import (
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -11,41 +10,33 @@ import (
 
 func LoginMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		header := c.GetHeader("Authorization")
-		if header == "" || !strings.HasPrefix(header, "Bearer ") {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "No hay token"})
+		getToken, err := c.Cookie("user_id")
+		if err != nil {
+			c.Redirect(http.StatusSeeOther, "/login")
 			c.Abort()
 			return
 		}
-		tokenString := strings.TrimPrefix(header, "Bearer ")
-		JWT_SECRET := os.Getenv("JWT_SECRET")
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			//token.Method valida que la firma de JWT sea HS256
-			//_ no almacena el valor debido a que solo verifica
+		token, err := jwt.Parse(getToken, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
 			}
-			return []byte(JWT_SECRET), nil
+			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"errors": "Token invalido"})
+			c.Redirect(http.StatusSeeOther, "/login")
 			c.Abort()
 			return
 		}
-		datos_token, ok := token.Claims.(jwt.MapClaims)
+		datosInterface := token.Claims
+		datos, ok := datosInterface.(jwt.MapClaims)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "No se pueden leer los datos del token"})
+			c.Redirect(http.StatusSeeOther, "/login")
 			c.Abort()
 			return
 		}
-		//user_id es el nombre asignado en la funcion jwt.MapClaims en la funcion login
-		userID, ok := datos_token["user_id"].(float64)
-		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User id incorrecto"})
-			c.Abort()
-			return
-		}
-		c.Set("user_id", uint(userID))
+		getUserID := datos["user_id"].(float64)
+		userID := uint(getUserID)
+		c.Set("user_id", userID)
 		c.Next()
 	}
 }

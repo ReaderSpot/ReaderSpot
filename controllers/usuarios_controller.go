@@ -3,6 +3,8 @@ package controllers
 import (
 	"autonomo_dos/db"
 	"autonomo_dos/models"
+	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -10,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func GetPerfilUsuario(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +26,9 @@ func EliminarUsuario(w http.ResponseWriter, r *http.Request) {
 }
 func RegistrarUsuario(c *gin.Context) {
 	var usuario models.Usuario
-	err_usuario := c.ShouldBindJSON(&usuario)
+	//ShouldBind detecta si es JSON, form o multipart
+	err_usuario := c.ShouldBind(&usuario)
+	fmt.Print(usuario)
 	if err_usuario != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Datos incorrectos"})
 		return
@@ -39,17 +44,15 @@ func RegistrarUsuario(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No se pudo registrar el usuario"})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"mensaje": "Usuario registrado",
-	})
+	c.Redirect(http.StatusSeeOther, "/valid/libros")
 }
 
 func LoginUsuario(c *gin.Context) {
 	var usuarioEntrante struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Email    string `form:"email"`
+		Password string `form:"password"`
 	}
-	err_json := c.ShouldBindJSON(&usuarioEntrante)
+	err_json := c.ShouldBind(&usuarioEntrante)
 	if err_json != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Formato JSON incorrecto"})
 		return
@@ -57,7 +60,12 @@ func LoginUsuario(c *gin.Context) {
 	var usuario models.Usuario
 	db := db.DB.Where("email = ?", usuarioEntrante.Email).First(&usuario)
 	if db.Error != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "No existe una cuenta registrada con el email"})
+		// Si el error es que no existe el usuario
+		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+			c.Redirect(http.StatusSeeOther, "/?error=cuenta_inexistente")
+			return
+		}
+		c.Redirect(http.StatusSeeOther, "/?error=error_db")
 		return
 	}
 	if !checkHashPassword(usuarioEntrante.Password, usuario.Password) {
@@ -68,15 +76,13 @@ func LoginUsuario(c *gin.Context) {
 		"user_id": usuario.ID,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	tokenID, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo generar JWT"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"mensaje": "Login exitoso",
-		"token":   tokenString,
-	})
+	c.SetCookie("user_id", tokenID, 86400, "/", "localhost", false, true)
+	c.Redirect(http.StatusSeeOther, "/valid/libros")
 }
 
 func hashearPassword(password string) (string, error) {

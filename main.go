@@ -8,12 +8,10 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
-
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-
 	db, err := db.ConectarDB()
 	if err != nil {
 		panic(err)
@@ -22,11 +20,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	router := gin.Default()
 	/*	|------------------------------|
 		|Crea la configuracion del CORS|
 		|------------------------------|
 	*/
+	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		//direccion de solicitudes permitidas
 		AllowOrigins: []string{"http://readerspot.xyz"},
@@ -58,24 +56,25 @@ func main() {
 		endpoint de prueba
 		-------------------
 	*/
-	authenticator := router.Group("/auth")
-	authenticator.POST("/registro", controllers.RegistrarUsuario)
-	authenticator.POST("/login", controllers.LoginUsuario)
-	validate := router.Group("/valid")
-	/*
-		-----------------------------------------
-		Middleware para verificar si esta logueado
-		-----------------------------------------
-	*/
-	validate.Use(middlewares.LoginMiddleware())
-	router.GET("/test", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"mensaje": "GOOD",
-		})
+	router.LoadHTMLGlob("views/*")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index.html", nil)
 	})
-	validate.GET("/libros", controllers.BuscarLibroJWT)
+	router.GET("/registro", func(c *gin.Context) {
+		c.HTML(200, "registro.html", nil)
+	})
+	router.POST("/registro", controllers.RegistrarUsuario)
+	router.GET("/login", func(c *gin.Context) {
+		c.HTML(200, "login.html", nil)
+	})
+	router.POST("/login", controllers.LoginUsuario)
+	validate := router.Group("/valid")
+	validate.Use(middlewares.LoginMiddleware())
+	{
+		validate.GET("/libros", controllers.BuscarLibroJWT)
+	}
 	validate.POST("/libros", controllers.CrearLibroJWT)
-	router.Run(":8080")
+	router.Run()
 }
 
 /*
