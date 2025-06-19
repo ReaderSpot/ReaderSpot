@@ -72,8 +72,8 @@ func main() {
 	validate.Use(middlewares.LoginMiddleware())
 	{
 		validate.GET("/libros", controllers.BuscarLibroJWT)
+		validate.POST("/libros", controllers.CrearLibroJWT)
 	}
-	validate.POST("/libros", controllers.CrearLibroJWT)
 	router.Run()
 }
 

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -51,6 +52,14 @@ func BuscarLibroJWT(c *gin.Context) {
 		NombreCategoria string    `json:"nombre_categoria"`
 		CreatedAt       time.Time `json:"created_at"`
 	}
+	//Obtiene las categorias del usuario para el menu agregar libro
+	var Categoria []models.Categoria
+	db_categoria := db.DB.Where("usuario_id = ?", userID).Find(&Categoria)
+	if db_categoria.Error != nil {
+		c.String(http.StatusInternalServerError, "No se pudo cargar las categorias")
+		return
+	}
+	//Obtiene los libros del usuario para la ruta /auth/libros
 	var Libros []LibroRespuesta
 	db := db.DB.Table("libros").Select("libros.id, libros.titulo, libros.autor, libros.leido, libros.url_pdf, COALESCE(categoria.nombre, '') as nombre_categoria").
 		Joins("LEFT JOIN categoria ON libros.categoria_id = categoria.id").
@@ -61,13 +70,15 @@ func BuscarLibroJWT(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "libros.html", gin.H{
-		"Libros": Libros,
+		"Libros":    Libros,
+		"Categoria": Categoria,
 	})
 }
 
 func CrearLibroJWT(c *gin.Context) {
 	var libro models.Libro
-	libro_error := c.ShouldBind(&libro)
+	libro_error := c.ShouldBindWith(&libro, binding.Form)
+	log.Print("Libro registrado: ", libro)
 	if libro_error != nil {
 		c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=formato_incorrecto")
 		return
@@ -79,17 +90,6 @@ func CrearLibroJWT(c *gin.Context) {
 	}
 	userID := obtener_userID.(uint)
 	libro.UsuarioID = userID
-	libro.Leido = c.PostForm("leido") == "on" //Convierte checkbox a bool
-	categoriaIDStr := c.PostForm("categoria_id")
-	if categoriaIDStr != "" {
-		categoriaID, err := strconv.ParseUint(categoriaIDStr, 10, 64)
-		if err == nil {
-			libro.CategoriaID = uint(categoriaID)
-		} else {
-			c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=categoria_invalida")
-			return
-		}
-	}
 	db_libro := db.DB.Create(&libro)
 	if db_libro.Error != nil {
 		c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=no_se_pudo_agregar_el_libro")
@@ -117,26 +117,3 @@ func BorrarLibroJWT(c *gin.Context) {
 	}
 	c.Redirect(http.StatusSeeOther, "/valid/libros?success=libro_eliminado")
 }
-
-/*
-	var categoria models.Categoria
-	if libro.CategoriaID != 0 {
-		db_categoria := db.DB.Where("(usuario_id = ? OR usuario_id IS NULL) AND id = ?", userID, libro.CategoriaID).First(&categoria)
-		if db_categoria.Error != nil {
-			c.Redirect(http.StatusSeeOther, "/auth/libros/agregar?error=categoria_no_encontrada")
-			return
-		}
-	} else if libro.NombreCategoria != "" {
-		db_categoria := db.DB.Where("(usuario_id = ? OR usuario_id IS NULL) AND nombre = ?", userID, libro.NombreCategoria).First(&categoria)
-		if db_categoria.Error != nil {
-			categoria = models.Categoria{
-				Nombre:    libro.NombreCategoria,
-				UsuarioID: &userID,
-			}
-			db_categoria := db.DB.Create(&categoria)
-			if db_categoria.Error != nil {
-				c.Redirect(http.StatusSeeOther, "/auth/libros/agregar?error=categoria_no_agregada")
-				return
-			}
-		}
-	}*/
