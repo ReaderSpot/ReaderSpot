@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"autonomo_dos/db"
-	"autonomo_dos/models"
+	"ReaderSpot/db"
+	"ReaderSpot/models"
 	"errors"
 	"fmt"
 	"net/http"

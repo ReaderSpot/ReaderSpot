@@ -1,10 +1,10 @@
 package main
 
 import (
-	"autonomo_dos/controllers"
-	"autonomo_dos/db"
-	"autonomo_dos/middlewares"
-	"autonomo_dos/models"
+	"ReaderSpot/controllers"
+	"ReaderSpot/db"
+	"ReaderSpot/middlewares"
+	"ReaderSpot/models"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -73,18 +73,7 @@ func main() {
 	{
 		validate.GET("/libros", controllers.BuscarLibroJWT)
 		validate.POST("/libros", controllers.CrearLibroJWT)
+		validate.POST("/libros/categoria_nueva", controllers.AgregarCategoriaJWT)
 	}
 	router.Run()
 }
-
-/*
-func main() {
-	DB, err := db.ConectarDB()
-	if err != nil {
-		log.Fatalf("Error al conectar a la base de datos: %v", err)
-	}
-	defer DB.Close()
-
-	fmt.Println("Conexión exitosa a la base de datos MySQL.")
-}
-*/

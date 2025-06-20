@@ -1,4 +1,4 @@
-module autonomo_dos
+module ReaderSpot
 
 go 1.24.4
 

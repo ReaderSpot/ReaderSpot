@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"autonomo_dos/db"
-	"autonomo_dos/models"
+	"ReaderSpot/db"
+	"ReaderSpot/models"
 	"log"
 	"net/http"
 	"os"
@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -49,7 +48,7 @@ func BuscarLibroJWT(c *gin.Context) {
 		Autor           string    `json:"autor"`
 		Leido           bool      `json:"leido"`
 		UrlPdf          string    `json:"url_pdf"`
-		NombreCategoria string    `json:"nombre_categoria"`
+		NombreCategoria string    `form:"nombre_categoria"`
 		CreatedAt       time.Time `json:"created_at"`
 	}
 	//Obtiene las categorias del usuario para el menu agregar libro
@@ -77,21 +76,46 @@ func BuscarLibroJWT(c *gin.Context) {
 
 func CrearLibroJWT(c *gin.Context) {
 	var libro models.Libro
-	libro_error := c.ShouldBindWith(&libro, binding.Form)
-	log.Print("Libro registrado: ", libro)
-	if libro_error != nil {
+	err := c.ShouldBind(&libro)
+	if err != nil {
+		log.Println("Error en el binding del formulario:", err)
 		c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=formato_incorrecto")
 		return
 	}
-	obtener_userID, existe := c.Get("user_id")
-	if !existe {
-		c.Redirect(http.StatusSeeOther, "/login?error=no_has_iniciado_sesion")
+	log.Print("Libro recibido del formulario: ", libro)
+	obtener_userID, err := c.Cookie("user_id")
+	if err != nil {
+		c.Redirect(http.StatusSeeOther, "/login")
+		c.Abort()
 		return
 	}
-	userID := obtener_userID.(uint)
+
+	token, err := jwt.Parse(obtener_userID, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil || !token.Valid {
+		c.Redirect(http.StatusSeeOther, "/login")
+		c.Abort()
+		return
+	}
+
+	datosInterface := token.Claims
+	datos, ok := datosInterface.(jwt.MapClaims)
+	if !ok {
+		c.Redirect(http.StatusSeeOther, "/login")
+		return
+	}
+
+	userID := uint(datos["user_id"].(float64))
+	log.Printf("User ID: %d", userID)
+
 	libro.UsuarioID = userID
-	db_libro := db.DB.Create(&libro)
-	if db_libro.Error != nil {
+	result := db.DB.Create(&libro)
+	if result.Error != nil {
+		log.Println("Error al guardar el libro:", result.Error)
 		c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=no_se_pudo_agregar_el_libro")
 		return
 	}
@@ -116,4 +140,43 @@ func BorrarLibroJWT(c *gin.Context) {
 		return
 	}
 	c.Redirect(http.StatusSeeOther, "/valid/libros?success=libro_eliminado")
+}
+
+func AgregarCategoriaJWT(c *gin.Context) {
+	var categoria models.Categoria
+	err := c.ShouldBind(&categoria)
+	//Obtiene el usr_id del JWT
+	obtener_userID, err := c.Cookie("user_id")
+	if err != nil {
+		c.Redirect(http.StatusSeeOther, "/login")
+		c.Abort()
+		return
+	}
+	token, err := jwt.Parse(obtener_userID, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil || !token.Valid {
+		c.Redirect(http.StatusSeeOther, "/login")
+		c.Abort()
+		return
+	}
+	datosInterface := token.Claims
+	datos, ok := datosInterface.(jwt.MapClaims)
+	if ok {
+		getUserID := datos["user_id"].(float64)
+		userID := uint(getUserID)
+		log.Printf("User ID: %d", userID)
+		c.Set("user_id", userID)
+	}
+	userID := datos["user_id"].(float64)
+	categoria.UsuarioID = uint(userID)
+	//Agrega categoria
+	db := db.DB.Create(&categoria)
+	if db.Error != nil {
+		c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=No_se_pudo_agregar_la_categoria")
+	}
+	c.Redirect(http.StatusSeeOther, "/valid/libros?success=Se_agrego_la_categoria")
 }
