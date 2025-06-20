@@ -5,43 +5,19 @@ import (
 	"ReaderSpot/models"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func BuscarLibroJWT(c *gin.Context) {
 	log.Print("Funcion buscar libro")
-	//user_id debe coincidir con el nombre asignado en la funcion jwt.MapClaims en la funcion login
-	obtener_userID, err := c.Cookie("user_id")
-	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/login")
-		c.Abort()
-		return
-	}
-	token, err := jwt.Parse(obtener_userID, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
-	if err != nil || !token.Valid {
-		c.Redirect(http.StatusSeeOther, "/login")
-		c.Abort()
-		return
-	}
-	datosInterface := token.Claims
-	datos, ok := datosInterface.(jwt.MapClaims)
-	if ok {
-		getUserID := datos["user_id"].(float64)
-		userID := uint(getUserID)
-		log.Printf("User ID: %d", userID)
-		c.Set("user_id", userID)
-	}
-	userID := datos["user_id"].(float64)
+	//Obtener userID
+	obtenerUserID, _ := c.Get("user_id")
+	userID := obtenerUserID.(uint)
+	log.Print("User ID: ", userID)
+	//Struct para los datos del libro agregado
 	type LibroRespuesta struct {
 		ID              uint      `json:"id"`
 		Titulo          string    `json:"titulo"`
@@ -82,35 +58,11 @@ func CrearLibroJWT(c *gin.Context) {
 		c.Redirect(http.StatusSeeOther, "/valid/libros/agregar?error=formato_incorrecto")
 		return
 	}
-	log.Print("Libro recibido del formulario: ", libro)
-	obtener_userID, err := c.Cookie("user_id")
-	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/login")
-		c.Abort()
-		return
-	}
-
-	token, err := jwt.Parse(obtener_userID, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
-	if err != nil || !token.Valid {
-		c.Redirect(http.StatusSeeOther, "/login")
-		c.Abort()
-		return
-	}
-
-	datosInterface := token.Claims
-	datos, ok := datosInterface.(jwt.MapClaims)
-	if !ok {
-		c.Redirect(http.StatusSeeOther, "/login")
-		return
-	}
-
-	userID := uint(datos["user_id"].(float64))
-	log.Printf("User ID: %d", userID)
+	log.Print("Funcion agregar libro")
+	//Obtener userID
+	obtenerUserID, _ := c.Get("user_id")
+	userID := obtenerUserID.(uint)
+	log.Print("User ID: ", userID)
 
 	libro.UsuarioID = userID
 	result := db.DB.Create(&libro)
@@ -145,33 +97,14 @@ func BorrarLibroJWT(c *gin.Context) {
 func AgregarCategoriaJWT(c *gin.Context) {
 	var categoria models.Categoria
 	err := c.ShouldBind(&categoria)
-	//Obtiene el usr_id del JWT
-	obtener_userID, err := c.Cookie("user_id")
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/login")
-		c.Abort()
-		return
+		c.Redirect(http.StatusSeeOther, "/valid/libros?error=Formato_categoria_incorrecto")
 	}
-	token, err := jwt.Parse(obtener_userID, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
-	if err != nil || !token.Valid {
-		c.Redirect(http.StatusSeeOther, "/login")
-		c.Abort()
-		return
-	}
-	datosInterface := token.Claims
-	datos, ok := datosInterface.(jwt.MapClaims)
-	if ok {
-		getUserID := datos["user_id"].(float64)
-		userID := uint(getUserID)
-		log.Printf("User ID: %d", userID)
-		c.Set("user_id", userID)
-	}
-	userID := datos["user_id"].(float64)
+	log.Print("Funcion agregar categoria")
+	//Obtener userID
+	obtenerUserID, _ := c.Get("user_id")
+	userID := obtenerUserID.(uint)
+	log.Print("User ID: ", userID)
 	categoria.UsuarioID = uint(userID)
 	//Agrega categoria
 	db := db.DB.Create(&categoria)

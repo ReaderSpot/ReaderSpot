@@ -69,7 +69,7 @@ func main() {
 	})
 	router.POST("/login", controllers.LoginUsuario)
 	validate := router.Group("/valid")
-	validate.Use(middlewares.LoginMiddleware())
+	validate.Use(middlewares.AuthMiddleware())
 	{
 		validate.GET("/libros", controllers.BuscarLibroJWT)
 		validate.POST("/libros", controllers.CrearLibroJWT)
