@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{{.Titulo}} - Lectura</title>
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      padding: 2rem;
+      user-select: none;
+    }
+
+    iframe {
+      width: 100%;
+      height: 90vh;
+      border: none;
+    }
+
+    body, iframe {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+  <div class="container">
+    <div class="d-flex justify-content-end mb-3">
+      <a href="/autenticado/inicio/libros/adquiridos" class="btn btn-outline-light fw-bold text-white border-white">
+        Libros adquiridos
+      </a>
+    </div>
+
+    <h1 class="text-center">{{.Titulo}}</h1>
+    <iframe src="{{.UrlPDF}}#toolbar=0&navpanes=0&scrollbar=0" allow="fullscreen"></iframe>
+  </div>
+</body>
+</html>
