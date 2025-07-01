@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Iniciar Sesión</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>
+            
+            <!-- Contenedor para mensajes de error -->
+            <div id="error-message" class="alert alert-danger d-none" role="alert">
+            </div>
+            
+            <form method="POST" action="/login">
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" required />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+            </form>
+            <div class="text-center mt-3">
+              <a href="/registro">¿No tienes cuenta? Regístrate</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Función para obtener parámetros de la URL
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Función para mostrar mensajes de error
+    function showErrorMessage(errorType) {
+      const errorContainer = document.getElementById('error-message');
+      const errorMessages = {
+        'contraseña_incorrecta': 'La contraseña ingresada es incorrecta.',
+        'usuario_no_encontrado': 'El usuario no fue encontrado.',
+        'campos_vacíos': 'Por favor, complete todos los campos.',
+        'error_general': 'Ocurrió un error al iniciar sesión. Inténtelo de nuevo.'
+      };
+      
+      if (errorMessages[errorType]) {
+        errorContainer.textContent = errorMessages[errorType];
+        errorContainer.classList.remove('d-none');
+      }
+    }
+
+    // Verificar si hay un parámetro de error en la URL al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      const errorParam = getUrlParameter('error');
+      if (errorParam) {
+        showErrorMessage(errorParam);
+      }
+    });
+  </script>
+</body>
+</html>

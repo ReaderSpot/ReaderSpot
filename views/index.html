@@ -1,47 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>ReaderSpot - Tu Biblioteca Digital</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Bienvenido a la Biblioteca Digital</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .hero {
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(to right, #007bff, #00c6ff);
+      color: white;
+      padding: 2rem;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.25rem;
+    }
+  </style>
 </head>
 <body>
-  <!-- Encabezado -->
-  <header class="bg-dark text-white py-5">
-    <div class="container text-center">
-      <h1 class="display-4">📖 ReaderSpot</h1>
-      <p class="lead">Tu biblioteca personal en la nube. Guarda, organiza y lee tus libros desde cualquier lugar.</p>
+  <div class="hero">
+    <div class="container">
+      <h1>Biblioteca Digital</h1>
+      <p>Explora, presta o compra libros desde cualquier lugar. Una plataforma accesible y moderna para gestionar tus lecturas.</p>
       <div class="mt-4">
-        <a href="/login" class="btn btn-light btn-lg me-2">Iniciar Sesión</a>
+        <a href="/login" class="btn btn-light btn-lg me-3">Iniciar Sesión</a>
         <a href="/registro" class="btn btn-outline-light btn-lg">Registrarse</a>
       </div>
     </div>
-  </header>
-
-  <!-- Características -->
-  <section class="container my-5">
-    <div class="row text-center">
-      <div class="col-md-4">
-        <h3>📚 Administra tus libros</h3>
-        <p>Sube tus PDF y organiza tu biblioteca por categorías o autores.</p>
-      </div>
-      <div class="col-md-4">
-        <h3>🔐 Seguridad</h3>
-        <p>Protege tus datos con autenticación JWT y almacenamiento seguro.</p>
-      </div>
-      <div class="col-md-4">
-        <h3>📱 Accede desde cualquier lugar</h3>
-        <p>Disponible en móviles, tablets y escritorio. Solo necesitas conexión a internet.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-light text-center py-3">
-    <small>© 2025 ReaderSpot - Todos los derechos reservados</small>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
 </body>
 </html>

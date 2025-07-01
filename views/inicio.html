@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Libros Disponibles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Biblioteca Digital</a>
+      <div class="d-flex">
+        <a class="btn btn-outline-light me-2" href="/autenticado/inicio/libros/adquiridos">Mis libros</a>
+        <a class="btn btn-outline-light" href="/autenticado/logout">Cerrar sesión</a>
+      </div>
+    </div>
+    {{ if .IsAdmin }}
+    <a class="btn btn-outline-warning me-2" href="/autenticado/admin/libros">Admin</a>
+    {{ end }}
+  </nav>
+
+  <div class="container mt-4">
+    <h2 class="mb-4">Libros disponibles</h2>
+
+    <div class="row">
+      {{range .Libros}}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <img src="{{ .Portada }}" alt="Portada" width="150" height="200" style="object-fit: contain;">
+            <h5 class="card-title">{{.Titulo}}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{.Autor}}</h6>
+            <p class="card-text">{{.Descripcion}}</p>
+            <p class="card-text"><strong>Precio:</strong> ${{printf "%.2f" .Precio}}</p>
+
+            <form method="POST" action="/autenticado/inicio/libros/comprar/{{.ID}}" class="d-inline">
+              <button type="submit" class="btn btn-success btn-sm">Comprar</button>
+            </form>
+
+            <form method="POST" action="/autenticado/inicio/libros/prestamo/{{.ID}}" class="d-inline">
+              <button type="submit" class="btn btn-warning btn-sm">Prestar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {{else}}
+      <p>No hay libros disponibles.</p>
+      {{end}}
+    </div>
+  </div>
+</body>
+
+</html>
