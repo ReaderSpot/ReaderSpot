@@ -10,5 +10,6 @@ type Libro struct {
 	Categoria   string  `gorm:"not null" form:"categoria"`
 	Disponible  bool    `gorm:"default:true" json:"disponible" form:"disponible"`
 	Precio      float64 `json:"precio" form:"precio"`
-	Portada     string  `form:"portada" json:"portada"`
+	Portada     string  `json:"portada" form:"portada"`
+	UrlPDF      string  `json:"url_pdf" form:"url_pdf"`
 }
