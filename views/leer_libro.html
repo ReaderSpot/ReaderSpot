@@ -1,42 +1,470 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>{{.Titulo}} - Lectura</title>
-  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-  <style>
-    body {
-      background-color: #1e1e1e;
-      color: #ffffff;
-      padding: 2rem;
-      user-select: none;
-    }
+    <meta charset="UTF-8">
+    <title>{{.Titulo}} - Lectura</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --gray-950: #030712;
+            --gray-900: #111827;
+            --gray-800: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --purple-400: #a78bfa;
+            --purple-600: #9333ea;
+            --purple-700: #7c3aed;
+        }
 
-    iframe {
-      width: 100%;
-      height: 90vh;
-      border: none;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body, iframe {
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-  </style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-950);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: var(--gray-900);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: var(--gray-600);
+            border-radius: 4px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--gray-900), var(--gray-800));
+            border-bottom: 1px solid var(--gray-700);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .book-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .book-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--blue-500), var(--purple-500));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .book-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
+            color: white;
+            border: 1px solid var(--blue-600);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--gray-300);
+            border: 1px solid var(--gray-600);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-800);
+            border-color: var(--gray-500);
+            color: white;
+        }
+
+        /* PDF Viewer Container */
+        .pdf-container {
+            padding: 1rem 0;
+            height: calc(100vh - 120px);
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--gray-700);
+            border-radius: 0.75rem;
+            background-color: var(--gray-900);
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0.75rem;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray-400);
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid var(--gray-700);
+            border-top: 3px solid var(--blue-500);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            color: var(--gray-400);
+        }
+
+        /* Reading Controls */
+        .reading-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 50;
+        }
+
+        .control-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gray-800), var(--gray-700));
+            border: 1px solid var(--gray-600);
+            color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, var(--gray-700), var(--gray-600));
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .book-info {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .book-title {
+                font-size: 1.25rem;
+                white-space: normal;
+                text-align: center;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+
+            .pdf-container {
+                height: calc(100vh - 160px);
+                padding: 0.5rem 0;
+            }
+
+            .reading-controls {
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .control-btn {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .book-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Fullscreen Mode */
+        .fullscreen-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background-color: var(--gray-950);
+        }
+
+        .fullscreen-mode .pdf-iframe {
+            border-radius: 0;
+        }
+
+        /* Dark mode enhancements */
+        .pdf-viewer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 49%, rgba(59, 130, 246, 0.05) 50%, transparent 51%);
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
 </head>
 <body oncontextmenu="return false">
-  <div class="container">
-    <div class="d-flex justify-content-end mb-3">
-      <a href="/autenticado/inicio/libros/adquiridos" class="btn btn-outline-light fw-bold text-white border-white">
-        Libros adquiridos
-      </a>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="book-info">
+                    <div class="book-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="book-title">{{.Titulo}}</h1>
+                </div>
+
+                <div class="header-actions">
+                    <a href="/autenticado/inicio/libros/adquiridos" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        Mi Biblioteca
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PDF Viewer -->
+    <div class="container">
+        <div class="pdf-container">
+            <div class="pdf-viewer" id="pdfViewer">
+                <div class="loading-container" id="loadingContainer">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Cargando libro...</div>
+                </div>
+                <iframe 
+                    src="{{.UrlPDF}}#toolbar=0&navpanes=0&scrollbar=0" 
+                    class="pdf-iframe" 
+                    id="pdfIframe"
+                    allow="fullscreen"
+                    onload="hideLoading()"
+                    style="display: none;">
+                </iframe>
+            </div>
+        </div>
     </div>
 
-    <h1 class="text-center">{{.Titulo}}</h1>
-    <iframe src="{{.UrlPDF}}#toolbar=0&navpanes=0&scrollbar=0" allow="fullscreen"></iframe>
-  </div>
+    <!-- Reading Controls -->
+    <div class="reading-controls">
+        <button class="control-btn" onclick="goBack()" title="Volver">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 19-7-7 7-7"></path>
+                <path d="M19 12H5"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Función para ocultar el loading cuando el PDF se carga
+        function hideLoading() {
+            const loadingContainer = document.getElementById('loadingContainer');
+            const pdfIframe = document.getElementById('pdfIframe');
+            
+            setTimeout(() => {
+                loadingContainer.style.display = 'none';
+                pdfIframe.style.display = 'block';
+            }, 500);
+        }
+
+        // Función para alternar pantalla completa
+        function toggleFullscreen() {
+            const pdfViewer = document.getElementById('pdfViewer');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            
+            if (!document.fullscreenElement) {
+                pdfViewer.requestFullscreen().then(() => {
+                    pdfViewer.classList.add('fullscreen-mode');
+                    fullscreenBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+                        </svg>
+                        Salir pantalla completa
+                    `;
+                });
+            } else {
+                document.exitFullscreen().then(() => {
+                    pdfViewer.classList.remove('fullscreen-mode');
+                    fullscreenBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        </svg>
+                        Pantalla completa
+                    `;
+                });
+            }
+        }
+
+        // Función para volver atrás
+        function goBack() {
+            window.history.back();
+        }
+
+        // Prevenir acciones de copia y selección
+        document.addEventListener('keydown', function(e) {
+            // Prevenir Ctrl+C, Ctrl+A, Ctrl+S, F12, etc.
+            if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 65 || e.keyCode === 83)) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.keyCode === 123) { // F12
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Prevenir clic derecho en el iframe
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframe = document.getElementById('pdfIframe');
+            iframe.addEventListener('load', function() {
+                try {
+                    iframe.contentDocument.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+                } catch (e) {
+                    // Cross-origin restrictions
+                }
+            });
+        });
+    </script>
 </body>
 </html>

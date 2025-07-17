@@ -1,40 +1,630 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Registro de Usuario</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - ReaderSpot</title>
+    <style>
+        :root {
+            --gray-950: #030712;
+            --gray-900: #111827;
+            --gray-800: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --purple-400: #a78bfa;
+            --purple-600: #9333ea;
+            --purple-700: #7c3aed;
+            --green-400: #4ade80;
+            --green-500: #22c55e;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-950);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid var(--gray-800);
+            background-color: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-300);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+            border: 1px solid var(--gray-600);
+            background-color: transparent;
+        }
+
+        .back-btn:hover {
+            color: white;
+            background-color: var(--gray-800);
+            border-color: var(--gray-500);
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(88, 28, 135, 0.1), rgba(17, 24, 39, 0.1));
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .register-card {
+            background-color: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--gray-700);
+            border-radius: 1rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .register-subtitle {
+            color: var(--gray-300);
+            font-size: 1rem;
+        }
+
+        /* Form Styles */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--gray-300);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            background-color: var(--gray-800);
+            border: 1px solid var(--gray-600);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .form-input.error {
+            border-color: var(--red-500);
+        }
+
+        .form-input.error:focus {
+            border-color: var(--red-500);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .error-message {
+            color: var(--red-400);
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background-color: var(--gray-700);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .strength-fill.weak {
+            width: 33%;
+            background-color: var(--red-500);
+        }
+
+        .strength-fill.medium {
+            width: 66%;
+            background-color: #f59e0b;
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background-color: var(--green-500);
+        }
+
+        .strength-text {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .checkbox {
+            width: 1rem;
+            height: 1rem;
+            margin-top: 0.125rem;
+            accent-color: var(--blue-500);
+        }
+
+        .checkbox-label {
+            font-size: 0.875rem;
+            color: var(--gray-300);
+            line-height: 1.4;
+        }
+
+        .checkbox-label a {
+            color: var(--blue-400);
+            text-decoration: none;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Button */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--blue-600);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--blue-700);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--gray-600);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-700);
+        }
+
+        .login-link p {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .login-link a {
+            color: var(--blue-400);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Success Message */
+        .success-message {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--green-500);
+            color: var(--green-400);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .register-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card shadow-lg">
-          <div class="card-body">
-            <h2 class="card-title text-center mb-4">Registro de Usuario</h2>
-            <form method="POST" action="/registro">
-              <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre completo</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" required />
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" required />
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" required />
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Registrarse</button>
-            </form>
-            <div class="text-center mt-3">
-              <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--blue-400);">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span class="logo-text">ReaderSpot</span>
+                </a>
+
+                <a href="/" class="back-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 19-7-7 7-7"></path>
+                        <path d="M19 12H5"></path>
+                    </svg>
+                    Volver al inicio
+                </a>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="register-container">
+            <div class="register-card">
+                <div class="register-header">
+                    <h1 class="register-title">Crear Cuenta</h1>
+                    <p class="register-subtitle">Únete a miles de lectores en ReaderSpot</p>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <p>¡Cuenta creada exitosamente! Revisa tu correo para verificar tu cuenta.</p>
+                </div>
+
+                <form method="POST" action="/registro" class="form" id="registerForm">
+                    <div class="form-group">
+                        <label for="nombre" class="form-label">Nombre Completo</label>
+                        <input 
+                            type="text" 
+                            id="nombre" 
+                            name="nombre" 
+                            class="form-input" 
+                            placeholder="Ingresa tu nombre completo"
+                            required
+                        >
+                        <div class="error-message" id="fullNameError">Por favor ingresa tu nombre completo</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo Electrónico</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="tu@email.com"
+                            required
+                        >
+                        <div class="error-message" id="emailError">Por favor ingresa un correo válido</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="Crea una contraseña segura"
+                            required
+                        >
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText">Ingresa al menos 8 caracteres</div>
+                        </div>
+                        <div class="error-message" id="passwordError">La contraseña debe tener al menos 8 caracteres</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            class="form-input" 
+                            placeholder="Confirma tu contraseña"
+                            required
+                        >
+                        <div class="error-message" id="confirmPasswordError">Las contraseñas no coinciden</div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" name="terms" class="checkbox" required>
+                        <label for="terms" class="checkbox-label">
+                            Acepto los <a href="#" target="_blank">Términos de Servicio</a> y la 
+                            <a href="#" target="_blank">Política de Privacidad</a> de ReaderSpot
+                        </label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="newsletter" name="newsletter" class="checkbox">
+                        <label for="newsletter" class="checkbox-label">
+                            Quiero recibir ofertas especiales y novedades por correo electrónico
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span id="btnText">Crear Cuenta</span>
+                        <div class="loading" id="loading" style="display: none;"></div>
+                    </button>
+                </form>
+
+                <div class="login-link">
+                    <p>¿Ya tienes una cuenta? <a href="/login">Inicia sesión aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Form validation and submission
+        const form = document.getElementById('registerForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+
+        // Password strength checker
+        const passwordInput = document.getElementById('password');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = checkPasswordStrength(password);
+            
+            strengthFill.className = 'strength-fill';
+            
+            if (password.length === 0) {
+                strengthText.textContent = 'Ingresa al menos 8 caracteres';
+                return;
+            }
+            
+            if (strength.score === 1) {
+                strengthFill.classList.add('weak');
+                strengthText.textContent = 'Contraseña débil';
+            } else if (strength.score === 2) {
+                strengthFill.classList.add('medium');
+                strengthText.textContent = 'Contraseña media';
+            } else if (strength.score === 3) {
+                strengthFill.classList.add('strong');
+                strengthText.textContent = 'Contraseña fuerte';
+            }
+        });
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            
+            if (password.length >= 8) score++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+            if (/\d/.test(password)) score++;
+            if (/[^a-zA-Z\d]/.test(password)) score++;
+            
+            return { score: Math.min(score, 3) };
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(msg => {
+                msg.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate full name
+            const fullName = document.getElementById('nombre');
+            if (fullName.value.trim().length < 2) {
+                showError('fullName', 'fullNameError', 'El nombre debe tener al menos 2 caracteres');
+                isValid = false;
+            }
+
+            // Validate email
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                showError('email', 'emailError', 'Por favor ingresa un correo válido');
+                isValid = false;
+            }
+
+            // Validate password
+            const password = document.getElementById('password');
+            if (password.value.length < 8) {
+                showError('password', 'passwordError', 'La contraseña debe tener al menos 8 caracteres');
+                isValid = false;
+            }
+
+            // Validate password confirmation
+            const confirmPassword = document.getElementById('confirmPassword');
+            if (password.value !== confirmPassword.value) {
+                showError('confirmPassword', 'confirmPasswordError', 'Las contraseñas no coinciden');
+                isValid = false;
+            }
+
+            // Validate terms acceptance
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                alert('Debes aceptar los términos de servicio para continuar');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            
+            input.classList.add('error');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        // Real-time validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const errorMsg = document.getElementById('confirmPasswordError');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.classList.add('error');
+                errorMsg.textContent = 'Las contraseñas no coinciden';
+                errorMsg.classList.add('show');
+            } else {
+                this.classList.remove('error');
+                errorMsg.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

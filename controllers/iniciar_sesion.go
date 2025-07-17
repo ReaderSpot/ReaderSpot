@@ -21,13 +21,13 @@ func Iniciar_sesion(ctx *gin.Context) {
 	if db.Error != nil {
 		// Si hay error, no existe el usuario
 		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
-			ctx.Redirect(http.StatusSeeOther, "/?error=cuenta_inexistente")
+			ctx.Redirect(http.StatusSeeOther, "/login?error=cuenta_inexistente")
 			return
 		}
 		ctx.Redirect(http.StatusSeeOther, "/?error=error_db")
 		return
 	}
-	//Verifica si la contraseña es correcta con la funcion en el modulo utils
+	//Verifica si la contraseña es correcta con la funcion verificarPassword modulo utils
 	if !utils.VerfiicarPassword(usuarioRequest.Password, usuario.Password) {
 		ctx.Redirect(http.StatusSeeOther, "/login?error=contraseña_incorrecta")
 		return

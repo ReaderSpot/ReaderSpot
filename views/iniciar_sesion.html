@@ -1,75 +1,546 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Iniciar Sesión</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - ReaderSpot</title>
+    <style>
+        :root {
+            --gray-950: #030712;
+            --gray-900: #111827;
+            --gray-800: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --purple-400: #a78bfa;
+            --purple-600: #9333ea;
+            --purple-700: #7c3aed;
+            --green-400: #4ade80;
+            --green-500: #22c55e;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-950);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid var(--gray-800);
+            background-color: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-300);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+            border: 1px solid var(--gray-600);
+            background-color: transparent;
+        }
+
+        .back-btn:hover {
+            color: white;
+            background-color: var(--gray-800);
+            border-color: var(--gray-500);
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(88, 28, 135, 0.1), rgba(17, 24, 39, 0.1));
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card {
+            background-color: rgba(31, 41, 55, 0.8);
+            border: 1px solid var(--gray-700);
+            border-radius: 1rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: var(--gray-300);
+            font-size: 1rem;
+        }
+
+        /* Error Message */
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--red-500);
+            color: var(--red-400);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--gray-300);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            background-color: var(--gray-800);
+            border: 1px solid var(--gray-600);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        /* Button */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--blue-600);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--blue-700);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--gray-600);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Forgot Password Link */
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: var(--blue-400);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Register Link */
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-700);
+        }
+
+        .register-link p {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .register-link a {
+            color: var(--blue-400);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Social Login (Optional) */
+        .social-login {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-700);
+        }
+
+        .social-text {
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-600);
+            border-radius: 0.5rem;
+            background-color: transparent;
+            color: var(--gray-300);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+        }
+
+        .btn-social:hover {
+            background-color: var(--gray-800);
+            border-color: var(--gray-500);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .login-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card shadow-lg">
-          <div class="card-body">
-            <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>
-            
-            <!-- Contenedor para mensajes de error -->
-            <div id="error-message" class="alert alert-danger d-none" role="alert">
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--blue-400);">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span class="logo-text">ReaderSpot</span>
+                </a>
+
+                <a href="/" class="back-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 19-7-7 7-7"></path>
+                        <path d="M19 12H5"></path>
+                    </svg>
+                    Volver al inicio
+                </a>
             </div>
-            
-            <form method="POST" action="/login">
-              <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" required />
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" required />
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-            </form>
-            <div class="text-center mt-3">
-              <a href="/registro">¿No tienes cuenta? Regístrate</a>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </header>
 
-  <script>
-    // Función para obtener parámetros de la URL
-    function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      var results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
+    <!-- Main Content -->
+    <main class="main">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1 class="login-title">Iniciar Sesión</h1>
+                    <p class="login-subtitle">Accede a tu biblioteca digital</p>
+                </div>
 
-    // Función para mostrar mensajes de error
-    function showErrorMessage(errorType) {
-      const errorContainer = document.getElementById('error-message');
-      const errorMessages = {
-        'contraseña_incorrecta': 'La contraseña ingresada es incorrecta.',
-        'usuario_no_encontrado': 'El usuario no fue encontrado.',
-        'campos_vacíos': 'Por favor, complete todos los campos.',
-        'error_general': 'Ocurrió un error al iniciar sesión. Inténtelo de nuevo.'
-      };
-      
-      if (errorMessages[errorType]) {
-        errorContainer.textContent = errorMessages[errorType];
-        errorContainer.classList.remove('d-none');
-      }
-    }
+                <!-- Error Message Container -->
+                <div id="error-message" class="error-message" role="alert">
+                </div>
 
-    // Verificar si hay un parámetro de error en la URL al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-      const errorParam = getUrlParameter('error');
-      if (errorParam) {
-        showErrorMessage(errorParam);
-      }
-    });
-  </script>
+                <form class="form" method="POST" action="/login">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo Electrónico</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="tu@email.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="Ingresa tu contraseña"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span id="btnText">Ingresar</span>
+                        <div class="loading" id="loading" style="display: none;"></div>
+                    </button>
+                </form>
+
+                <div class="forgot-password">
+                    <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <div class="register-link">
+                    <p>¿No tienes cuenta? <a href="/registro">Regístrate aquí</a></p>
+                </div>
+
+                <!-- Optional Social Login Section -->
+                <div class="social-login">
+                    <div class="social-text">O continúa con</div>
+                    <div class="social-buttons">
+                        <a href="/auth/google" class="btn-social">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            Continuar con Google
+                        </a>
+                        <a href="/auth/facebook" class="btn-social">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Continuar con Facebook
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Función para obtener parámetros de la URL
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Función para mostrar mensajes de error
+        function showErrorMessage(errorType) {
+            const errorContainer = document.getElementById('error-message');
+            const errorMessages = {
+                'contraseña_incorrecta': 'La contraseña ingresada es incorrecta.',
+                'cuenta_inexistente': 'El usuario no fue encontrado.',
+                'campos_vacíos': 'Por favor, complete todos los campos.',
+                'error_general': 'Ocurrió un error al iniciar sesión. Inténtelo de nuevo.',
+                'cuenta_no_verificada': 'Tu cuenta no ha sido verificada. Revisa tu correo electrónico.',
+                'cuenta_bloqueada': 'Tu cuenta ha sido bloqueada. Contacta al soporte.',
+                'sesion_expirada': 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.'
+            };
+
+            if (errorMessages[errorType]) {
+                errorContainer.textContent = errorMessages[errorType];
+                errorContainer.classList.add('show');
+            }
+        }
+
+        // Verificar si hay un parámetro de error en la URL al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorParam = getUrlParameter('error');
+            if (errorParam) {
+                showErrorMessage(errorParam);
+            }
+        });
+
+        // Manejar el envío del formulario para mostrar estado de carga
+        const form = document.querySelector('.form');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const loading = document.getElementById('loading');
+
+        form.addEventListener('submit', function(e) {
+            // Mostrar estado de carga
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            loading.style.display = 'inline-block';
+
+            // Ocultar mensaje de error previo
+            const errorContainer = document.getElementById('error-message');
+            errorContainer.classList.remove('show');
+        });
+
+        // Validación básica del lado del cliente
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        function validateForm() {
+            let isValid = true;
+            
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailInput.style.borderColor = 'var(--red-500)';
+                isValid = false;
+            } else {
+                emailInput.style.borderColor = 'var(--gray-600)';
+            }
+
+            // Validar contraseña
+            if (passwordInput.value.length < 1) {
+                passwordInput.style.borderColor = 'var(--red-500)';
+                isValid = false;
+            } else {
+                passwordInput.style.borderColor = 'var(--gray-600)';
+            }
+
+            return isValid;
+        }
+
+        // Validación en tiempo real
+        emailInput.addEventListener('blur', validateForm);
+        passwordInput.addEventListener('blur', validateForm);
+
+        // Limpiar estilos de error al escribir
+        emailInput.addEventListener('input', function() {
+            this.style.borderColor = 'var(--gray-600)';
+        });
+
+        passwordInput.addEventListener('input', function() {
+            this.style.borderColor = 'var(--gray-600)';
+        });
+    </script>
 </body>
 </html>
