@@ -1,3 +1,5 @@
 .env
-/static/*
-!/static/.gitkeep
+/static/libro/*
+/satic/portadas/*
+!/static/libro/.gitkeep
+!/static/portadas/.gitkeep
