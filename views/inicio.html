@@ -438,7 +438,8 @@
                     <div class="book-price">${{ printf "%.2f" .Precio }}</div>
                     
                     <div class="book-actions">
-                        <form method="POST" action="/autenticado/inicio/libros/comprar/{{ .ID }}">
+                        <form method="POST" action="/autenticado/inicio/libros/comprar">
+                            <input type="hidden" name="book_id" value="{{ .ID }}">
                             <button type="submit" class="btn btn-success btn-sm">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="8" cy="21" r="1"></circle>

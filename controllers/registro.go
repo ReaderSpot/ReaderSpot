@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"sistema_de_gestion_de_libros_electronicos/db"
 	"sistema_de_gestion_de_libros_electronicos/models"
@@ -14,7 +13,6 @@ func Registro(ctx *gin.Context) {
 	//Obtiene el usuario del cliente
 	var usuario models.Usuario
 	err_usuario := ctx.ShouldBind(&usuario)
-	fmt.Print(usuario)
 	if err_usuario != nil {
 		ctx.Redirect(http.StatusSeeOther, "/login?error=datos_incorrectos")
 		return

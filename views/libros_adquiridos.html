@@ -1,47 +1,292 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mis Libros Adquiridos</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Libros Adquiridos - ReaderSpot</title>
+    <style>
+        /* Variables de color de tu index.html */
+        :root {
+            --gray-950: #030712;
+            --gray-900: #111827;
+            --gray-800: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --purple-400: #a78bfa;
+            --purple-600: #9333ea;
+            --purple-700: #7c3aed;
+            --green-400: #4ade80;
+            --yellow-400: #facc15;
+            --red-400: #f87171;
+            --indigo-400: #818cf8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-950); /* Fondo oscuro de ReaderSpot */
+            color: white; /* Color de texto principal de ReaderSpot */
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header (Navbar) - Coincide con el index.html */
+        .header {
+            border-bottom: 1px solid var(--gray-800);
+            background-color: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+        }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-actions { /* Renombrado de header-actions para evitar conflicto si se usa el mismo header */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .btn-outline-light { /* Estilo para botones de navegación */
+            background: none;
+            border: 1px solid var(--gray-600);
+            color: var(--gray-300);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+        }
+        .btn-outline-light:hover {
+            background-color: var(--gray-800);
+            color: white;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            padding-top: 2rem; /* mt-4 */
+            padding-bottom: 4rem;
+        }
+
+        .section-title { /* mb-4 */
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center; /* Centrado para coincidir con el estilo de ReaderSpot */
+            color: white;
+        }
+
+        /* Grid de libros */
+        .books-grid { /* row row-cols-1 row-cols-md-3 g-4 */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Ajuste para 3 columnas en md */
+            gap: 1.5rem; /* g-4 */
+        }
+
+        /* Tarjeta de libro */
+        .book-card { /* card h-100 shadow-sm */
+            background-color: var(--gray-800); /* Fondo de tarjeta */
+            border: 1px solid var(--gray-700); /* Borde de tarjeta */
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-sm */
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* h-100 */
+            overflow: hidden; /* Para que la imagen no se salga del borde redondeado */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .book-cover { /* card-img-top */
+            width: 100%;
+            height: 200px; /* Altura fija */
+            object-fit: contain; /* object-fit: contain */
+            background-color: var(--gray-900); /* Fondo para la imagen si es transparente */
+            border-bottom: 1px solid var(--gray-700);
+        }
+
+        .card-body-custom { /* card-body d-flex flex-column */
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Para que ocupe el espacio restante */
+        }
+
+        .book-title { /* card-title */
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .book-author { /* card-text strong */
+            font-size: 0.95rem;
+            color: var(--gray-300);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-description { /* card-text */
+            font-size: 0.9rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            flex-grow: 1; /* Para que la descripción empuje el botón hacia abajo */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Limita a 3 líneas */
+            -webkit-box-orient: vertical;
+        }
+
+        .acquisition-date { /* text-muted small mb-2 */
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-custom { /* badge bg-success */
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            background-color: var(--green-400); /* Color verde de ReaderSpot */
+        }
+
+        .btn-read-now { /* btn btn-success mt-auto */
+            background-color: var(--blue-600); /* Color principal de botón de ReaderSpot */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-decoration: none; /* Para el <a> */
+            display: inline-flex; /* Para el <a> */
+            justify-content: center; /* Para el <a> */
+            align-items: center; /* Para el <a> */
+            transition: background-color 0.2s ease-in-out;
+            margin-top: auto; /* mt-auto */
+        }
+        .btn-read-now:hover {
+            background-color: var(--blue-700);
+        }
+
+        /* Mensaje de alerta */
+        .alert-info-custom { /* alert alert-info */
+            background-color: rgba(59, 130, 246, 0.1); /* Fondo azul claro con transparencia */
+            color: var(--blue-400); /* Texto azul */
+            border: 1px solid rgba(59, 130, 246, 0.2); /* Borde azul */
+            border-radius: 0.375rem;
+            padding: 1rem 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .books-grid {
+                grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas medianas */
+            }
+            .section-title {
+                text-align: left; /* Alinea el título a la izquierda en pantallas más grandes */
+            }
+        }
+        @media (min-width: 1024px) {
+            .books-grid {
+                grid-template-columns: repeat(4, 1fr); /* Opcional: 4 columnas en pantallas grandes */
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Mis Libros</a>
-    <a href="/autenticado/inicio" class="btn btn-outline-light">Inicio</a>
-    <a href="/autenticado/logout" class="btn btn-outline-light">Cerrar sesión</a>
-  </div>
-</nav>
-
-<div class="container mt-4">
-  <h2 class="mb-4">Libros Adquiridos</h2>
-
-  {{ if .Transacciones }}
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      {{ range .Transacciones }}
-        <div class="col">
-          <div class="card h-100 shadow-sm">
-            <img src="{{ .Libro.Portada }}" class="card-img-top" alt="Portada del libro" style="height: 200px; object-fit: contain;">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ .Libro.Titulo }}</h5>
-              <p class="card-text"><strong>Autor:</strong> {{ .Libro.Autor }}</p>
-              <p class="card-text">{{ .Libro.Descripcion }}</p>
-              <p class="text-muted small mb-2">Adquirido el: {{ .FechaInicio.Format "02/01/2006" }}</p>
-              {{if eq .Tipo "compra" }}
-                <span class="badge bg-success mb-2">Compra</span>
-                <a href="/autenticado/inicio/libros/leer/{{.Libro.ID}}" class="btn btn-success mt-auto">Leer ahora</a>
-              {{ end }}
+<body>
+    <!-- Header (Navbar) -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--blue-400);">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span class="logo-text">ReaderSpot</span>
+                </a>
+                <div class="nav-actions">
+                    <a href="/autenticado/inicio" class="btn-outline-light">Inicio</a>
+                    <a href="/autenticado/logout" class="btn-outline-light">Cerrar sesión</a>
+                </div>
             </div>
-          </div>
         </div>
-      {{ end }}
-    </div>
-  {{ else }}
-    <div class="alert alert-info">Aún no has adquirido ningún libro.</div>
-  {{ end }}
-</div>
+    </header>
 
+    <div class="container main-content">
+        <h2 class="section-title">Libros Adquiridos</h2>
+
+        {{ if .Transacciones }}
+            <div class="books-grid">
+                {{ range .Transacciones }}
+                    <div class="book-card">
+                        <img src="{{ .Libro.Portada }}" class="book-cover" alt="Portada del libro">
+                        <div class="card-body-custom">
+                            <h5 class="book-title">{{ .Libro.Titulo }}</h5>
+                            <p class="book-author"><strong>Autor:</strong> {{ .Libro.Autor }}</p>
+                            <p class="book-description">{{ .Libro.Descripcion }}</p>
+                            <p class="acquisition-date">Adquirido el: {{ .FechaInicio.Format "02/01/2006" }}</p>
+                            {{if eq .Tipo "compra" }}
+                                <span class="badge-custom">Compra</span>
+                                <a href="/autenticado/inicio/libros/leer/{{.Libro.ID}}" class="btn-read-now">Leer ahora</a>
+                            {{ end }}
+                        </div>
+                    </div>
+                {{ end }}
+            </div>
+        {{ else }}
+            <div class="alert-info-custom">Aún no has adquirido ningún libro.</div>
+        {{ end }}
+    </div>
 </body>
 </html>
