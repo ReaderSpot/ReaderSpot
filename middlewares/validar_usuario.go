@@ -38,6 +38,20 @@ func ValidarUsuario() gin.HandlerFunc {
 
 		obtenerID, ok := datosCookie["usuarioID"].(float64)
 		if !ok {
+			ctx.Redirect(http.StatusSeeOther, "/login?error=inicia_sesion")
+			ctx.Abort()
+			return
+		}
+
+		is2fa, _ := datosCookie["is2fa"].(bool)
+		Authenticated2fa := datosCookie["isAuthenticated2fa"]
+		isAuthenticated2fa := false
+
+		if value, ok := Authenticated2fa.(bool); ok {
+			isAuthenticated2fa = value
+		}
+
+		if is2fa && !isAuthenticated2fa {
 			ctx.Redirect(http.StatusSeeOther, "/login")
 			ctx.Abort()
 			return
@@ -47,7 +61,6 @@ func ValidarUsuario() gin.HandlerFunc {
 
 		ctx.Set("usuarioID", usuarioID)
 		ctx.Set("claims", datosCookie)
-
 		ctx.Next()
 	}
 }

@@ -28,8 +28,9 @@ func Registro(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, "/login?error=no_se_pudo_registrar_el_usuario")
 		return
 	}
+	usuarioIsAutenticated2fa := false
 	//Genera un JWT y lo asigna en la cookie del cliente
-	tokenID, _ := utils.GetJWT(usuario.ID, usuario.IsAdmin)
-	ctx.SetCookie("usuarioID", tokenID, 86400, "/", "localhost", false, true)
+	tokenID, _ := utils.GetJWT(usuario.ID, usuario.IsAdmin, usuario.Email, usuario.Is_2fa, usuarioIsAutenticated2fa)
+	ctx.SetCookie("usuarioID", tokenID, 86400, "/", "", false, true)
 	ctx.Redirect(http.StatusSeeOther, "/autenticado/inicio")
 }

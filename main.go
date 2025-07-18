@@ -37,6 +37,10 @@ func main() {
 	})
 	r.POST("/login", controllers.Iniciar_sesion)
 	r.Static("/static", "./static")
+	r.GET("/verificarFA", func(ctx *gin.Context) {
+		ctx.HTML(200, "verificar_FA.html", nil)
+	})
+	r.POST("/verificarFA", controllers.VerificarFA)
 	//Endpoints a los que solo puede acceder un usuario autenticado /autenticado/ruta
 	autenticado := r.Group("/autenticado")
 	autenticado.Use(middlewares.ValidarUsuario())
@@ -46,6 +50,8 @@ func main() {
 		autenticado.POST("/inicio/libros/comprar/:id", controllers.ComprarLibro)
 		autenticado.GET("/inicio/libros/adquiridos", controllers.GetLibrosAdquiridos)
 		autenticado.GET("/inicio/libros/leer/:id", controllers.LeerLibro)
+		autenticado.GET("/inicio/configuracion/seguridad/configurarFA", controllers.RegistrarFA)
+		autenticado.POST("/inicio/configuracion/seguridad/configurarFA", controllers.ConfigurarFA)
 		isAdmin := autenticado.Group("/admin")
 		isAdmin.Use(middlewares.ValidarAdmin())
 		isAdmin.GET("/libros", controllers.GetLibrosAdmin)

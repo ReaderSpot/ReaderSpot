@@ -32,13 +32,15 @@ func Iniciar_sesion(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, "/login?error=contraseña_incorrecta")
 		return
 	}
+	isAuthenticated2fa := false
 	//Genera un JWT y lo asigna en la cookie del cliente
-	tokenID, _ := utils.GetJWT(usuario.ID, usuario.IsAdmin)
-	ctx.SetCookie("usuarioID", tokenID, 86400, "/", "localhost", false, true)
-	//Valida si el usuario es Admin
-	if usuario.IsAdmin {
-		ctx.Redirect(http.StatusSeeOther, "/autenticado/admin/libros")
-	} else {
+	tokenID, _ := utils.GetJWT(usuario.ID, usuario.IsAdmin, usuario.Email, usuario.Is_2fa, isAuthenticated2fa)
+	ctx.SetCookie("usuarioID", tokenID, 86400, "/", "", false, true)
+	//Valida si el usuario tiene 2fa
+	if usuario.Is_2fa {
+		ctx.Redirect(http.StatusSeeOther, "/verificarFA")
+		return
+	} else if usuario.Is_2fa == false {
 		ctx.Redirect(http.StatusSeeOther, "/autenticado/inicio")
 	}
 }

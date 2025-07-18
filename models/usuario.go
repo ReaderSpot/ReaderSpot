@@ -9,4 +9,6 @@ type Usuario struct {
 	Password      string        `gorm:"not null" json:"-" form:"password"`
 	IsAdmin       bool          `gorm:"default:false" json:"is_admin"`
 	Transacciones []Transaccion `gorm:"foreignKey:UsuarioID"`
+	Secret_2fa    string
+	Is_2fa        bool `gorm:"default:false"`
 }

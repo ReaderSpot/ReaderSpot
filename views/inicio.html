@@ -368,7 +368,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-container">
-            <a class="navbar-brand" href="/autenticado/inicio">
+            <a class="navbar-brand" href="/">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -394,7 +394,17 @@
                     </svg>
                     Mis libros
                 </a>
-                
+
+                {{ if not .is_2fa}}
+                <a class="btn btn-outline" href="/autenticado/inicio/configuracion/seguridad/configurarFA">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Configurar 2FA
+                </a>
+                {{ end }}
+
                 <a class="btn btn-outline" href="/autenticado/logout">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
