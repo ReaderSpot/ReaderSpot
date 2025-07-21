@@ -30,10 +30,12 @@ func ComprarLibro(ctx *gin.Context) {
 	if err == redis.Nil {
 		ctx.Redirect(http.StatusSeeOther, "/autenticado/inicio/completarcompra?error=no_tienes_productos_para_pagar")
 	}
+	//Almacena los datos de redis para realizar la transaccion de libro
 	var carrito models.CarritoCompras
 	json.Unmarshal([]byte(value), &carrito)
 	for i, item := range carrito {
 		var libro models.Libro
+		//Se agrega la compra a transaccion de db
 		db.DB.First(&libro, "id=?", carrito[i].ID)
 		transaccion := models.Transaccion{
 			Tipo:        "compra",
