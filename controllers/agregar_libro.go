@@ -26,8 +26,12 @@ func AgregarLibro(ctx *gin.Context) {
 	pathLibro := fmt.Sprintf("static/libro/%s", nombreArchivoLibro)
 	ctx.SaveUploadedFile(libroArchivo, pathLibro)
 	libro.UrlPDF = "/" + pathLibro
-	db := db.DB.Create(&libro)
-	if db.Error != nil {
+	libroDB := db.DB.Create(&libro)
+	//Al agregar libro se elimina la cache de redis
+	redisClient := db.RedisClient()
+	key := "libros_disponibles"
+	redisClient.Del(db.Ctx, key)
+	if libroDB.Error != nil {
 		ctx.Redirect(http.StatusSeeOther, "/autenticado/admin/libros?error=no_se_agrego_el_libro")
 	}
 	ctx.Redirect(http.StatusSeeOther, "/autenticado/admin/libros")
