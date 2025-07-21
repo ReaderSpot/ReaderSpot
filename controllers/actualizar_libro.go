@@ -38,5 +38,9 @@ func ActualizarLibro(ctx *gin.Context) {
 		}
 	}
 	db.DB.Save(&libro)
+	//Al actualizar se elimina la cache de redis
+	redisClient := db.RedisClient()
+	key := "libros_disponibles"
+	redisClient.Del(db.Ctx, key)
 	ctx.Redirect(http.StatusSeeOther, "/autenticado/admin/libros?success=libro_actualizado")
 }
