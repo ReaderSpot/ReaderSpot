@@ -14,5 +14,9 @@ func EliminarLibro(ctx *gin.Context) {
 	var libro models.Libro
 	db.DB.First(&libro, id)
 	db.DB.Unscoped().Delete(&libro)
+	//Al borrar libro eliminar cache redis
+	redisClient := db.RedisClient()
+	key := "libros_disponibles"
+	redisClient.Del(db.Ctx, key)
 	ctx.Redirect(http.StatusSeeOther, "/autenticado/admin/libros?success=libro_eliminado")
 }
