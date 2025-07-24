@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(models.Libro{}, models.Usuario{}, models.Transaccion{})
+	err = db.AutoMigrate(models.Libro{}, models.Usuario{}, models.Transaccion{}, models.Comentarios{})
 	if err != nil {
 		panic(err)
 	}
@@ -54,6 +54,8 @@ func main() {
 		autenticado.POST("/inicio/configuracion/seguridad/configurarFA", controllers.ConfigurarFA)
 		autenticado.GET("/inicio/libros/carrito", controllers.CompletarCompraGET)
 		autenticado.POST("/inicio/libros/completarcompra", controllers.ComprarLibro)
+		autenticado.GET("/inicio/libro", controllers.GetLibro)
+		autenticado.POST("/inicio/libro/comentario", controllers.ComentariosPOST)
 		isAdmin := autenticado.Group("/admin")
 		isAdmin.Use(middlewares.ValidarAdmin())
 		isAdmin.GET("/libros", controllers.GetLibrosAdmin)

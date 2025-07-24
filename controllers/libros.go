@@ -48,3 +48,25 @@ func GetLibros(ctx *gin.Context) {
 		"IsAdmin": isAdmin,
 	})
 }
+
+func GetLibro(ctx *gin.Context) {
+	var libro models.Libro
+	libroID := ctx.Query("id")
+	obtenerJWT, _ := ctx.Cookie("usuarioID")
+	JWT, _ := jwt.Parse(obtenerJWT, func(JWT *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	var comentarios []models.Comentarios
+	//Preload carga la informacion de Usuarios para agregar el autor del comentario
+	db.DB.Preload("Usuario").Where("libro_id = ?", libroID).Find(&comentarios)
+	var isAdmin bool
+	if datosJWT, ok := JWT.Claims.(jwt.MapClaims); ok && JWT.Valid {
+		isAdmin = datosJWT["isAdmin"].(bool)
+	}
+	db.DB.Where("id", libroID).Find(&libro)
+	ctx.HTML(200, "libro.html", gin.H{
+		"Libro":       libro,
+		"IsAdmin":     isAdmin,
+		"Comentarios": comentarios,
+	})
+}

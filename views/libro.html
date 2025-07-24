@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Libro - ReaderSpot</title>
+    <style>
+        :root {
+            --gray-950: #030712;
+            --gray-900: #111827;
+            --gray-800: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --gray-200: #e5e7eb;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --purple-400: #a78bfa;
+            --purple-600: #9333ea;
+            --purple-700: #7c3aed;
+            --green-400: #4ade80;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            --yellow-400: #facc15;
+            --yellow-500: #eab308;
+            --orange-500: #f97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-950);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--blue-600), var(--purple-600));
+            border-bottom: 1px solid var(--gray-700);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        .btn-admin {
+            background-color: var(--orange-500);
+            color: white;
+            border: 1px solid var(--orange-500);
+        }
+
+        .btn-admin:hover {
+            background-color: #ea580c;
+            border-color: #ea580c;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--green-600);
+            color: white;
+            border: 1px solid var(--green-600);
+        }
+
+        .btn-success:hover {
+            background-color: var(--green-500);
+            border-color: var(--green-500);
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        /* Book Detail Page Specific Styles */
+        .book-detail-container {
+            display: flex;
+            min-height: calc(100vh - 4rem);
+            /* Adjust for navbar height */
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--gray-950);
+            padding: 2rem 1rem;
+            /* Consistent padding */
+        }
+
+        .book-detail-card {
+            width: 100%;
+            max-width: 1000px;
+            /* Increased max-width for better layout */
+            background: linear-gradient(145deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.8));
+            border: 1px solid var(--gray-700);
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .book-detail-card {
+                flex-direction: row;
+                padding: 2rem;
+            }
+        }
+
+        .book-cover-wrapper {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .book-cover-detail {
+            width: 250px;
+            /* Larger cover */
+            height: 350px;
+            /* Larger cover */
+            object-fit: cover;
+            border-radius: 0.75rem;
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        .book-info-detail {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .book-info-detail {
+                text-align: left;
+            }
+        }
+
+        .book-title-detail {
+            font-size: 2.5rem;
+            /* Larger title */
+            font-weight: 800;
+            /* Extra bold */
+            margin-bottom: 0.75rem;
+            background: linear-gradient(to right, var(--blue-400), var(--purple-400));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .book-author-detail {
+            color: var(--blue-400);
+            font-size: 1.25rem;
+            /* Larger author text */
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-description-detail {
+            color: var(--gray-300);
+            font-size: 1rem;
+            /* Standard description size */
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .book-price-detail {
+            font-size: 3rem;
+            /* Very large price */
+            font-weight: bold;
+            color: var(--green-400);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .book-price-detail {
+                justify-content: flex-start;
+            }
+        }
+
+        .book-actions-detail {
+            display: flex;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .book-actions-detail {
+                justify-content: flex-start;
+            }
+        }
+
+        .btn-buy {
+            background-color: var(--blue-600);
+            color: white;
+            padding: 0.75rem 2rem;
+            /* Larger button */
+            font-size: 1.125rem;
+            /* Larger font */
+            font-weight: 600;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-buy:hover {
+            background-color: var(--blue-700);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Comentarios Section Styles */
+        .comments-section {
+            margin: 2rem auto;
+            /* Centered with top margin */
+            display: flex;
+            /* Make it a flex container */
+            flex-direction: column;
+            width: 100%;
+            max-width: 1000px;
+            /* Match book-detail-card max-width */
+            background: linear-gradient(145deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.8));
+            border: 1px solid var(--gray-700);
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .comments-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--yellow-400);
+            margin-bottom: 1rem;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            /* Removed gap: 1rem; */
+        }
+
+        .comment-item {
+            background-color: var(--gray-900);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-700);
+            margin-bottom: 0.5rem;
+            /* Smaller margin for continuous look */
+        }
+
+        .comment-item:last-child {
+            margin-bottom: 0;
+            /* Remove margin from the last item */
+        }
+
+        .comment-item p {
+            color: var(--gray-300);
+        }
+
+        .comment-item strong {
+            color: var(--green-400);
+        }
+
+        .empty-comments {
+            color: var(--gray-400);
+        }
+
+        .comment-form {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            /* Ensure it takes full width of its parent */
+            max-width: 600px;
+            /* Limit form width */
+            margin-left: auto;
+            /* Center the form */
+            margin-right: auto;
+            /* Center the form */
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-700);
+            background-color: var(--gray-800);
+            color: white;
+            resize: vertical;
+            /* Allow vertical resizing */
+        }
+
+        .comment-form .btn-success {
+            align-self: flex-start;
+            /* Keep button aligned to start */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a class="navbar-brand" href="/">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                ReaderSpot
+            </a>
+            <div class="navbar-actions">
+                <!-- Example of conditional rendering, replace with actual server-side logic if needed -->
+                <!-- {{ if .IsAdmin }} -->
+                <a class="btn btn-admin" href="/autenticado/admin/libros">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    Admin
+                </a>
+                <!-- {{ end }} -->
+                <a class="btn btn-outline" href="/autenticado/inicio/libros/adquiridos">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Mis libros
+                </a>
+                <!-- {{ if not .is_2fa}} -->
+                <a class="btn btn-outline" href="/autenticado/inicio/configuracion/seguridad/configurarFA">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Configurar 2FA
+                </a>
+                <!-- {{ end }} -->
+                <a class="btn btn-outline" href="/autenticado/logout">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16,17 21,12 16,7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Content for Book Detail -->
+    <div class="book-detail-container">
+        <div class="book-detail-card">
+            <div class="book-cover-wrapper">
+                <img src="{{ .Libro.Portada}}" alt="Portada de {{ .Libro.Titulo }}" class="book-cover-detail">
+            </div>
+            <div class="book-info-detail">
+                <h1 class="book-title-detail">{{ .Libro.Titulo }}</h1>
+                <p class="book-author-detail">por {{ .Libro.Autor }}</p>
+                <p class="book-description-detail">
+                    {{ .Libro.Descripcion }}
+                </p>
+                <div class="book-price-detail">${{ printf "%.2f" .Libro.Precio }}</div>
+                <div class="book-actions-detail">
+                    <form method="POST" action="/autenticado/inicio/libros/comprar">
+                        <input type="hidden" name="book_id" value="{{ .Libro.ID }}">
+                        <button class="btn-buy">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                            <circle cx="8" cy="21" r="1"></circle>
+                            <circle cx="19" cy="21" r="1"></circle>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12">
+                            </path>
+                        </svg>
+                        Comprar
+                    </button>
+                    </form>
+                    {{ if .IsAdmin}}
+                    <a class="btn btn-admin" href="/autenticado/admin/libros/editar/{{ .Libro.ID }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                            </path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Admin
+                    </a>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Sección de Comentarios -->
+    <div class="comments-section">
+        <h2>Comentarios</h2>
+        <!-- Lista de comentarios existentes -->
+        <div class="comments-list">
+            {{ range .Comentarios }}
+            <div class="comment-item">
+                <p><strong>{{ .Usuario.Nombre }}</strong>: {{ .Comentario }}</p>
+            </div>
+            {{ else }}
+            <p class="empty-comments">Sé el primero en comentar este libro.</p>
+            {{ end }}
+        </div>
+        <!-- Formulario de nuevo comentario -->
+        <form action="/autenticado/inicio/libro/comentario" method="POST" class="comment-form">
+            <input type="hidden" name="libro_id" value="{{ .Libro.ID }}">
+            <textarea name="comentario" rows="4" placeholder="Escribe tu comentario..."
+                class="comment-form-textarea"></textarea>
+            <button type="submit" class="btn btn-success">Enviar comentario</button>
+        </form>
+    </div>
+</body>
+</html>

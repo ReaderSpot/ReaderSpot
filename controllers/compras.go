@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"sistema_de_gestion_de_libros_electronicos/db"
@@ -17,8 +18,13 @@ import (
 
 func AgregarAlCarrito(ctx *gin.Context) {
 	var carrito models.CarritoCompras
-	libroIDJWT := ctx.PostForm("book_id")
-	libroID64, _ := strconv.ParseUint(libroIDJWT, 10, 64)
+	libroIDStr := ctx.PostForm("book_id")
+	libroID64, err := strconv.ParseUint(libroIDStr, 10, 64)
+	if err != nil || libroID64 == 0 {
+		log.Println("ID inválido al agregar al carrito:", libroIDStr)
+		ctx.Redirect(http.StatusSeeOther, "/autenticado/inicio?error=id_invalido")
+		return
+	}
 	libroID := uint(libroID64)
 	obtenerJWT, _ := ctx.Cookie("usuarioID")
 	token, _ := jwt.Parse(obtenerJWT, func(token *jwt.Token) (interface{}, error) {
@@ -42,6 +48,9 @@ func AgregarAlCarrito(ctx *gin.Context) {
 	}
 	isCarrito := false
 	for i, item := range carrito {
+		if item.ID <= 0 {
+			continue
+		}
 		if item.ID == libroID {
 			carrito[i].Cantidad++
 			isCarrito = true
